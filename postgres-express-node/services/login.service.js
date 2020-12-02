@@ -1,4 +1,4 @@
-
+const bcrypt = require("bcryptjs");
 const jwt= require("jsonwebtoken");
 const config= require("../config");
 
@@ -26,14 +26,17 @@ class LoginService {
     }
 
     this.logger.info("Checking password");
-    if(userRecord.password===password){
+    const validPassword = await bcrypt.compare(password,userRecord.password);
+
+    if(validPassword){
       this.logger.info("Password correct");
 
       const user = {
         username: userRecord.username,
-        role: userRecord.role || "guest",
+        role: userRecord.role || "guest", 
       };
-      const payload = {
+
+       const payload = {
         ...user,
         aud: config.jwt.audience || "localhost/api",
         iss: config.jwt.issuer || "localhost@fesb",
