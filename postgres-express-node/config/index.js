@@ -27,17 +27,21 @@ module.exports = {
     prefix: "/api",
   },
 
-  jwt:{
-    secret:process.env.JWT_SECRET,
-    expiresIn:process.env.JWT_DURATION ||"1h",
+  jwt: {
+    secret: process.env.JWT_SECRET,
+    expiresIn: process.env.JWT_DURATION || "1h",
     algorithms: ["HS256"],
-    exclude:{
-      path:[
+    exclude: {
+      path: [
         {
           url: "/api/login",
           methods: ["POST"],
         },
       ],
     },
+  },
+
+  bcrypt: {
+    SALT_ROUNDS: process.env.SALT_ROUNDS || 12,
   },
 };
