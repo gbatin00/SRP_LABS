@@ -1,8 +1,8 @@
 const {
-  AbilityBuilder,
-  Ability,
-  ForbiddenError,
-  subject,
+	AbilityBuilder,
+	Ability,
+	ForbiddenError,
+	subject,
 } = require("@casl/ability");
 
 // * =============================
@@ -18,113 +18,113 @@ const anonymous = {};
 // *  MedicalTests
 // * -----------------------------
 const MedicalTest_1 = subject("MedicalTest", {
-  id: 1,
-  UserId: 1,
-  test: "Covid",
-  result: "negative",
-  createdAt: new Date().setHours(0, 0, 0),
+	id: 1,
+	UserId: 1,
+	test: "Covid",
+	result: "negative",
+	createdAt: new Date().setHours(0, 0, 0),
 });
 
 // console.log(MedicalTest_1.__caslSubjectType__);
 
 const MedicalTest_2 = subject("MedicalTest", {
-  id: 2,
-  UserId: 2,
-  test: "Covid",
-  result: "positive",
-  createdAt: new Date().setHours(0, 0, 0),
+	id: 2,
+	UserId: 2,
+	test: "Covid",
+	result: "positive",
+	createdAt: new Date().setHours(0, 0, 0),
 });
 
 const MedicalTest_3 = subject("MedicalTest", {
-  id: 3,
-  UserId: 3,
-  test: "Covid",
-  result: "positive",
-  createdAt: new Date().setHours(0, 0, 0),
+	id: 3,
+	UserId: 3,
+	test: "Covid",
+	result: "positive",
+	createdAt: new Date().setHours(0, 0, 0),
 });
 
 const MedicalTest_4 = subject("MedicalTest", {
-  id: 4,
-  UserId: 3,
-  test: "HIV",
-  result: "positive",
-  createdAt: new Date().setHours(0, 0, 0),
+	id: 4,
+	UserId: 3,
+	test: "HIV",
+	result: "positive",
+	createdAt: new Date().setHours(0, 0, 0),
 });
 
 const MedicalTest_5 = subject("MedicalTest", {
-  id: 5,
-  UserId: 4,
-  test: "Swine flue",
-  result: "positive",
-  createdAt: new Date().setHours(0, 0, 0),
+	id: 5,
+	UserId: 4,
+	test: "Swine flue",
+	result: "positive",
+	createdAt: new Date().setHours(0, 0, 0),
 });
 
 // * =============================
 // *  Roles <--> permissions
 // * -----------------------------
 function defineAdminRules({ can }, user) {
-  can("manage", "all");
+	can("manage", "all");
 }
 
 function defineDoctorRules({ can }, user) {
-  // We allow doctors read access to all MedicalTests.
-  // To implement this policy in CASL we use a simple
-  // trick of merely checking if field UserId field
-  // exists in the given MedicalTest object (we do not
-  // verify the owner of the given test as in the case
-  // of regular users).
-  //
-  // To learn more about the used operator "$exists"
-  // please check: https://casl.js.org/v4/en/guide/conditions-in-depth
-  can("read", "MedicalTest", { UserId: { $exists: true } });
+	// We allow doctors read access to all MedicalTests.
+	// To implement this policy in CASL we use a simple
+	// trick of merely checking if field UserId field
+	// exists in the given MedicalTest object (we do not
+	// verify the owner of the given test as in the case
+	// of regular users).
+	//
+	// To learn more about the used operator "$exists"
+	// please check: https://casl.js.org/v4/en/guide/conditions-in-depth
+	can("read", "MedicalTest", { UserId: { $exists: true } });
 }
 
 function defineUserRules({ can }, user) {
-  // entity User
-  can(["read", "delete"], "User", { id: user.id });
-  can(["update"], "User", ["username", "password"], {
-    id: user.id,
-  });
+	// entity User
+	can(["read", "delete"], "User", { id: user.id });
+	can(["update"], "User", ["username", "password"], {
+		id: user.id,
+	});
 
-  // entity MedicalTest
-  can(["create", "read", "delete"], "MedicalTest", {
-    UserId: user.id,
-  });
-  can(["update"], "MedicalTest", ["test", "result"], {
-    UserId: user.id,
-  });
+	// entity MedicalTest
+	can(["create", "read", "delete"], "MedicalTest", {
+		UserId: user.id,
+	});
+	can(["update"], "MedicalTest", ["test", "result"], {
+		UserId: user.id,
+	});
 }
 
 function defineAnonymousRules({ can }, user) {
-  // entity User
-  can("create", "User");
+	// entity User
+	can("create", "User");
 }
 
 // * =============================
 // *  CASL rules for user
 // * -----------------------------
 function defineRulesFor(user) {
-  const builder = new AbilityBuilder(Ability);
+	const builder = new AbilityBuilder(Ability);
 
-  switch (user.role) {
-    case "admin":
-      defineAdminRules(builder);
-      break;
-    case "user":
-      defineAnonymousRules(builder);
-      defineUserRules(builder, user);
-      break;
-    case "doctor":
-      defineAnonymousRules(builder);
-      defineUserRules(builder, user);
-      defineDoctorRules(builder);
-      break;
-    default:
-      defineAnonymousRules(builder);
-      break;
-  }
+	switch (user.role) {
+		case "admin":
+			defineAdminRules(builder);
+			break;
+		case "user":
+			defineAnonymousRules(builder);
+			defineUserRules(builder, user);
+			break;
+		case "doctor":
+			defineAnonymousRules(builder);
+			defineUserRules(builder, user);
+			defineDoctorRules(builder);
+			break;
+		default:
+			defineAnonymousRules(builder);
+			break;
+	}
 
-  return builder.rules;
+	return builder.rules;
 }
 
 // * =============================
@@ -133,12 +133,12 @@ function defineRulesFor(user) {
 let ANONYMOUS_ABILITY;
 
 function defineAbilityFor(user) {
-  if (user) {
-    return new Ability(defineRulesFor(user));
-  }
+	if (user) {
+		return new Ability(defineRulesFor(user));
+	}
 
-  ANONYMOUS_ABILITY = ANONYMOUS_ABILITY || new Ability(defineRulesFor({}));
-  return ANONYMOUS_ABILITY;
+	ANONYMOUS_ABILITY = ANONYMOUS_ABILITY || new Ability(defineRulesFor({}));
+	return ANONYMOUS_ABILITY;
 }
 
 // ! =============================
@@ -151,39 +151,39 @@ user_2.ability = defineAbilityFor(user_2);
 anonymous.ability = defineAbilityFor(anonymous);
 
 const userDetails = (user) =>
-  user.id
-    ? `\nUser ${user.id} with role ${user.role.toUpperCase()}`
-    : "\nUser with role ANONYMOUS";
+	user.id
+		? `\nUser ${user.id} with role ${user.role.toUpperCase()}`
+		: "\nUser with role ANONYMOUS";
 
 const getAbilityFor = (user, object, action) =>
-  user.id
-    ? console.log(
-        `Can User ${user.id} (${user.role.toUpperCase()}) "${action}" ${
-          object.__caslSubjectType__
-        } ${object.id} (of User ${object.UserId})?`,
-        user.ability.can(action, object)
-      )
-    : console.log(
-        `Can ANONYMOUS user "${action}" ${object.__caslSubjectType__} ${object.id} (of User ${object.UserId})?`,
-        user.ability.can(action, object)
-      );
+	user.id
+		? console.log(
+				`Can User ${user.id} (${user.role.toUpperCase()}) "${action}" ${
+					object.__caslSubjectType__
+				} ${object.id} (of User ${object.UserId})?`,
+				user.ability.can(action, object)
+		  )
+		: console.log(
+				`Can ANONYMOUS user "${action}" ${object.__caslSubjectType__} ${object.id} (of User ${object.UserId})?`,
+				user.ability.can(action, object)
+		  );
 
 const getAbilityForField = (user, object, action, field) =>
-  user.id
-    ? console.log(
-        `Can User ${
-          user.id
-        } (${user.role.toUpperCase()}) "${action}" field "${field}" of ${
-          object.__caslSubjectType__
-        } ${object.id} (of User ${object.UserId ? object.UserId : object.id})?`,
-        user.ability.can(action, object, field)
-      )
-    : console.log(
-        `Can ANONYMOUS user "${action}" field "${field}" of ${
-          object.__caslSubjectType__
-        } ${object.id} (of User ${object.UserId ? object.UserId : object.id})?`,
-        user.ability.can(action, object, field)
-      );
+	user.id
+		? console.log(
+				`Can User ${
+					user.id
+				} (${user.role.toUpperCase()}) "${action}" field "${field}" of ${
+					object.__caslSubjectType__
+				} ${object.id} (of User ${object.UserId ? object.UserId : object.id})?`,
+				user.ability.can(action, object, field)
+		  )
+		: console.log(
+				`Can ANONYMOUS user "${action}" field "${field}" of ${
+					object.__caslSubjectType__
+				} ${object.id} (of User ${object.UserId ? object.UserId : object.id})?`,
+				user.ability.can(action, object, field)
+		  );
 
 // ! ADMIN
 console.group(userDetails(admin));
@@ -225,20 +225,20 @@ getAbilityFor(anonymous, MedicalTest_4, "update");
 getAbilityFor(anonymous, MedicalTest_5, "delete");
 getAbilityFor(anonymous, MedicalTest_2, "update");
 console.log(
-  "Can ANONYMOUS delete MedicalTest?",
-  anonymous.ability.can("delete", "MedicalTest")
+	"Can ANONYMOUS delete MedicalTest?",
+	anonymous.ability.can("delete", "MedicalTest")
 );
 console.log(
-  "Can ANONYMOUS create MedicalTest?",
-  anonymous.ability.can("create", "MedicalTest")
+	"Can ANONYMOUS create MedicalTest?",
+	anonymous.ability.can("create", "MedicalTest")
 );
 console.log(
-  "Can ANONYMOUS delete User?",
-  anonymous.ability.can("delete", "User")
+	"Can ANONYMOUS delete User?",
+	anonymous.ability.can("delete", "User")
 );
 console.log(
-  "Can ANONYMOUS create User?",
-  anonymous.ability.can("create", "User")
+	"Can ANONYMOUS create User?",
+	anonymous.ability.can("create", "User")
 );
 console.groupEnd();
 
@@ -246,48 +246,48 @@ console.groupEnd();
 // * Using CASL ForbiddenError
 // * -------------------------------
 ForbiddenError.setDefaultMessage(
-  (error) =>
-    `Authorization error: Not authorized for "${error.action}" on "${error.subjectType}"`
+	(error) =>
+		`Authorization error: Not authorized for "${error.action}" on "${error.subjectType}"`
 );
 
 console.group("\nCASL ForbiddenError");
 try {
-  console.log("\nADMIN:");
-  ForbiddenError.from(admin.ability).throwUnlessCan("delete", MedicalTest_5);
+	console.log("\nADMIN:");
+	ForbiddenError.from(admin.ability).throwUnlessCan("delete", MedicalTest_5);
 } catch (err) {
-  console.log(err.message);
+	console.log(err.message);
 }
 
 try {
-  console.log("\nANONYMOUS:");
-  ForbiddenError.from(anonymous.ability).throwUnlessCan(
-    "delete",
-    MedicalTest_5
-  );
+	console.log("\nANONYMOUS:");
+	ForbiddenError.from(anonymous.ability).throwUnlessCan(
+		"delete",
+		MedicalTest_5
+	);
 } catch (err) {
-  console.log(err.message);
+	console.log(err.message);
 }
 
 try {
-  console.log("\nUSER:");
-  ForbiddenError.from(user_1.ability).throwUnlessCan(
-    "update",
-    MedicalTest_3,
-    "UserId"
-  );
+	console.log("\nUSER:");
+	ForbiddenError.from(user_1.ability).throwUnlessCan(
+		"update",
+		MedicalTest_3,
+		"UserId"
+	);
 } catch (err) {
-  console.log(err.message);
+	console.log(err.message);
 }
 
 try {
-  console.log("\nUSER:");
-  ForbiddenError.from(user_1.ability).throwUnlessCan(
-    "update",
-    MedicalTest_3,
-    "test"
-  );
+	console.log("\nUSER:");
+	ForbiddenError.from(user_1.ability).throwUnlessCan(
+		"update",
+		MedicalTest_3,
+		"test"
+	);
 } catch (err) {
-  console.log(err.message);
+	console.log(err.message);
 }
 
 console.groupEnd();
